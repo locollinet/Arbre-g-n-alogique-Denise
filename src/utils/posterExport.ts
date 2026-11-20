@@ -37,12 +37,12 @@ export function buildPosterSvg(people: Person[], settings: TreeSettings): { svg:
   return { svg, width, height };
 }
 function download(blob: Blob, name: string) { const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 60000); }
-export function exportPosterSvg(people: Person[], settings: TreeSettings) { const {svg}=buildPosterSvg(people,settings); download(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),'arbre-des-wici.svg'); }
+export function exportPosterSvg(people: Person[], settings: TreeSettings) { const {svg}=buildPosterSvg(people,settings); download(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),'arbre-famille-tronchet.svg'); }
 export async function exportPosterPng(people: Person[], settings: TreeSettings) {
   const {svg,width,height}=buildPosterSvg(people,settings); const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
   try { const img=new Image(); await new Promise<void>((resolve,reject)=>{img.onload=()=>resolve();img.onerror=()=>reject(new Error('Impossible de générer l’image.'));img.src=url;});
     const scale=Math.min(1, 5000/Math.max(width,height), Math.sqrt(12000000/(width*height))); const canvas=document.createElement('canvas'); canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));const ctx=canvas.getContext('2d');if(!ctx) throw new Error('Canvas indisponible.');ctx.drawImage(img,0,0,canvas.width,canvas.height);
-    const blob=await new Promise<Blob>((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Impossible de créer le PNG.')),'image/png'));download(blob,'arbre-des-wici.png');
+    const blob=await new Promise<Blob>((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Impossible de créer le PNG.')),'image/png'));download(blob,'arbre-famille-tronchet.png');
   } finally {URL.revokeObjectURL(url);}
 }
 export function printPoster(people: Person[], settings: TreeSettings) {
@@ -56,7 +56,7 @@ export function printPoster(people: Person[], settings: TreeSettings) {
   const doc = iframe.contentWindow?.document || iframe.contentDocument;
   if (!doc) throw new Error('Impossible d’ouvrir l’impression.');
   doc.open();
-  doc.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Arbre des Wici</title><style>@page{size:landscape;margin:8mm}@media print{body{margin:0;background:#faf8f5}svg{display:block;width:100%;height:auto}}</style></head><body>${svg.replace(/^<\?xml[^?]*\?>/,'')}</body></html>`);
+  doc.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${settings.familyName || 'L’Arbre de Denise'}</title><style>@page{size:landscape;margin:8mm}@media print{body{margin:0;background:#faf8f5}svg{display:block;width:100%;height:auto}}</style></head><body>${svg.replace(/^<\?xml[^?]*\?>/,'')}</body></html>`);
   doc.close();
   setTimeout(() => {
     try {

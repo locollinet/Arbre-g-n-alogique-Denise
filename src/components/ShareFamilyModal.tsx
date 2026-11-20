@@ -13,7 +13,7 @@ export const ShareFamilyModal: React.FC<ShareFamilyModalProps> = ({
   isOpen,
   onClose,
   accentColor = '#8C7355',
-  familyName = "L’Arbre des Wici",
+  familyName = "L’Arbre de Denise",
   peopleCount = 42,
 }) => {
   const [copied, setCopied] = useState(false);

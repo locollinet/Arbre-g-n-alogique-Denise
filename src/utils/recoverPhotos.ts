@@ -63,7 +63,7 @@ export async function deepScanIndexedDbForPhotos(): Promise<Record<string, strin
 
   try {
     // If supported, list all databases
-    let dbNames: string[] = ['WiciFamilyPhotosDB'];
+    let dbNames: string[] = ['DeniseFamilyPhotosDB'];
     if (typeof indexedDB.databases === 'function') {
       try {
         const dbs = await indexedDB.databases();

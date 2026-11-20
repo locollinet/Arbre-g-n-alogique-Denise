@@ -25,6 +25,8 @@ import {
   TreeSettings,
   BRANCH_DEFINITIONS,
   GENERATION_LABELS,
+  ROOT_FOUNDER_ID,
+  getBirthSortKey,
   getFullName,
   getInitials,
   getLifeDates,
@@ -60,7 +62,7 @@ export const MobileGenealogyView: React.FC<MobileGenealogyViewProps> = ({
   // 'generations' = Grand Livre de Famille (par générations)
   // 'search' = Recherche simple et rapide
   const [mobileMode, setMobileMode] = useState<'lineage' | 'generations' | 'search'>('lineage');
-  const [currentFocusId, setCurrentFocusId] = useState<string>('victoria');
+  const [currentFocusId, setCurrentFocusId] = useState<string>(ROOT_FOUNDER_ID);
   const [history, setHistory] = useState<string[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,11 +100,7 @@ export const MobileGenealogyView: React.FC<MobileGenealogyViewProps> = ({
     if (!currentPerson) return [];
     return people
       .filter((p) => (p.parents || []).includes(currentPerson.id))
-      .sort((a, b) => {
-        const ya = parseInt((a.birth || '').replace(/\D/g, ''), 10) || 9999;
-        const yb = parseInt((b.birth || '').replace(/\D/g, ''), 10) || 9999;
-        return ya - yb;
-      });
+      .sort((a, b) => getBirthSortKey(a.birth) - getBirthSortKey(b.birth));
   }, [currentPerson, people]);
 
   const spouses = useMemo(() => {
@@ -126,19 +124,14 @@ export const MobileGenealogyView: React.FC<MobileGenealogyViewProps> = ({
           p.id !== currentPerson.id &&
           (p.parents || []).some((pid) => currentPerson.parents.includes(pid))
       )
-      .sort((a, b) => {
-        const ya = parseInt((a.birth || '').replace(/\D/g, ''), 10) || 9999;
-        const yb = parseInt((b.birth || '').replace(/\D/g, ''), 10) || 9999;
-        return ya - yb;
-      });
+      .sort((a, b) => getBirthSortKey(a.birth) - getBirthSortKey(b.birth));
   }, [currentPerson, people]);
 
   // Compute generation depth
   const depthMap = useMemo(() => {
     const map = new Map<string, number>();
-    map.set('victoria', 0);
-    map.set('fiodor', 0);
-    map.set('aloisi', 0);
+    map.set(ROOT_FOUNDER_ID, 0);
+    map.set('georgette', 0);
 
     let changed = true;
     let limit = people.length + 1;
@@ -351,14 +344,14 @@ export const MobileGenealogyView: React.FC<MobileGenealogyViewProps> = ({
                   <span>Personne précédente</span>
                 </button>
               )}
-              {currentFocusId !== 'victoria' && (
+              {currentFocusId !== ROOT_FOUNDER_ID && (
                 <button
                   type="button"
-                  onClick={() => navigateToPerson('victoria')}
+                  onClick={() => navigateToPerson(ROOT_FOUNDER_ID)}
                   className="min-h-[42px] px-3.5 bg-white border border-[#D0C6B8] text-[#1C1917] active:bg-[#EFECE4] rounded-full flex items-center gap-1.5 font-medium text-xs shadow-2xs"
                 >
                   <Home className="h-4 w-4 text-[#8C7A65]" />
-                  <span>Retour à Victoria</span>
+                  <span>Retour aux grands-parents</span>
                 </button>
               )}
             </div>
@@ -440,7 +433,7 @@ export const MobileGenealogyView: React.FC<MobileGenealogyViewProps> = ({
               </button>
               <div className="flex-1 min-w-0">
                 <span className="text-[11px] uppercase tracking-wider text-[#8C7355] font-medium">
-                  {currentPerson.id === 'victoria' ? 'Matriarche de la famille' : 'Fiche active'}
+                  {currentPerson.id === ROOT_FOUNDER_ID ? 'Grand-père fondateur' : 'Fiche active'}
                 </span>
                 <h3 className="font-serif text-2xl font-medium text-[#1C1917] leading-tight mt-0.5">
                   {getFullName(currentPerson)}

@@ -4,7 +4,7 @@
  * Guaranteed to persist on mobile Safari and desktop browsers without throwing.
  */
 
-const DB_NAME = 'WiciFamilyPhotosDB';
+const DB_NAME = 'DeniseFamilyPhotosDB';
 const DB_VERSION = 3; // Bumped to 3 to guarantee onupgradeneeded triggers on all existing client caches
 const STORE_NAME = 'photos';
 

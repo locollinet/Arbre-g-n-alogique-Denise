@@ -1,4 +1,10 @@
-import { Person, TreeSettings, getInitials } from '../data/wiciFamily';
+import {
+  Person,
+  TreeSettings,
+  MAIN_BRANCH_IDS,
+  getBirthSortKey,
+  getInitials,
+} from '../data/wiciFamily';
 import { resolveBranchId } from './treeLayout';
 import { buildBotanicalTreeSvg } from './botanicalTreePoster';
 
@@ -29,50 +35,95 @@ export const BRANCH_CONFIG: Record<
     border: string;
   }
 > = {
-  lydia: {
-    name: 'Branche Lydia',
-    founderId: 'lydia',
-    subtitle: 'Lignée Pêcheux · Péresson · Collinet',
-    color: '#2C4A6F',
-    light: '#F3F6FA',
-    accent: '#8CA6C4',
-    border: '#3D5A80',
+  serge: {
+    name: 'Branche Serge',
+    founderId: 'serge',
+    subtitle: '1928 – 1979',
+    color: '#8C6239',
+    light: '#FAF4EE',
+    accent: '#C4A482',
+    border: '#8C6239',
   },
-  flore: {
-    name: 'Branche Flore',
-    founderId: 'flore',
-    subtitle: 'Lignée Pilon · Crespel · Gonzalez',
-    color: '#7A3F3F',
-    light: '#FAF4F4',
-    accent: '#C79A9A',
-    border: '#8B5A5A',
+  genevieve: {
+    name: 'Branche Geneviève',
+    founderId: 'genevieve',
+    subtitle: 'Née en 1930',
+    color: '#3B624C',
+    light: '#F1F7F3',
+    accent: '#8EB09B',
+    border: '#3B624C',
   },
-  peter: {
-    name: 'Branche Peter',
-    founderId: 'peter',
-    subtitle: 'Lignée Wicikowski',
-    color: '#234463',
-    light: '#F2F6FA',
-    accent: '#7D9AB7',
+  'jean-claude': {
+    name: 'Branche Jean-Claude',
+    founderId: 'jean-claude',
+    subtitle: '1933 – 1991',
+    color: '#2E5275',
+    light: '#F1F5F9',
+    accent: '#8BA6C1',
     border: '#2E5275',
   },
-  therese: {
-    name: 'Branche Thérèse',
-    founderId: 'therese',
-    subtitle: 'Lignée Sailly · Lambert · Golay',
-    color: '#7A3A34',
-    light: '#FAF2F1',
-    accent: '#BF8882',
+  raymond: {
+    name: 'Branche Raymond',
+    founderId: 'raymond',
+    subtitle: '1936 – 2026',
+    color: '#8E4A42',
+    light: '#FAF2F0',
+    accent: '#C8958E',
     border: '#8E4A42',
   },
-  regine: {
-    name: 'Branche Régine',
-    founderId: 'regine',
-    subtitle: 'Lignée Simon',
-    color: '#55395B',
-    light: '#F8F4F9',
-    accent: '#A68BAE',
+  pierre: {
+    name: 'Branche Pierre',
+    founderId: 'pierre',
+    subtitle: 'Né en 1937',
+    color: '#6B4E71',
+    light: '#F7F3F8',
+    accent: '#B39CB8',
     border: '#6B4E71',
+  },
+  colette: {
+    name: 'Branche Colette',
+    founderId: 'colette',
+    subtitle: '1939 – 2022',
+    color: '#7C6438',
+    light: '#F9F5ED',
+    accent: '#C2AE88',
+    border: '#7C6438',
+  },
+  claude: {
+    name: 'Branche Claude',
+    founderId: 'claude',
+    subtitle: 'Né(e) en 1940',
+    color: '#35606A',
+    light: '#EFF6F8',
+    accent: '#88AEB6',
+    border: '#35606A',
+  },
+  michel: {
+    name: 'Branche Michel',
+    founderId: 'michel',
+    subtitle: '1941 – 1990',
+    color: '#5A5E6B',
+    light: '#F4F5F7',
+    accent: '#A4A8B4',
+    border: '#5A5E6B',
+  },
+  denise: {
+    name: 'Branche Denise',
+    founderId: 'denise',
+    subtitle: 'Née en 1944',
+    color: '#944B5F',
+    light: '#FBF2F5',
+    accent: '#CE96A6',
+    border: '#944B5F',
+  },
+  jacqueline: {
+    name: 'Branche Jacqueline',
+    founderId: 'jacqueline',
+    subtitle: '1946 – 1974',
+    color: '#596A42',
+    light: '#F3F6EF',
+    accent: '#A3B38D',
+    border: '#596A42',
   },
 };
 
@@ -201,24 +252,23 @@ export function buildPhotoPosterSvg(
   const height = isLandscape ? 3508 : 4960;
 
   const byId = new Map(people.map((p) => [p.id, p]));
-  const title = options.title || settings.familyName || 'L’Arbre des Wici';
+  const title = options.title || settings.familyName || 'L’Arbre de Denise';
   const subtitle =
     options.subtitle ||
-    `${people.length} PERSONNES RÉUNIES · 5 BRANCHES FAMILIALES · UNE HISTOIRE À TRANSMETTRE`;
+    `${people.length} PERSONNES RÉUNIES · 10 BRANCHES FAMILIALES · UNE HISTOIRE À TRANSMETTRE`;
 
   // 1. Group members by branch
-  const branchMembers: Record<string, Person[]> = {
-    lydia: [],
-    flore: [],
-    peter: [],
-    therese: [],
-    regine: [],
-  };
+  const branchKeys: string[] = [...MAIN_BRANCH_IDS];
+  const branchMembers: Record<string, Person[]> = {};
+  for (const key of branchKeys) {
+    branchMembers[key] = [];
+  }
 
+  const founderIds = ['guillaume', 'georgette', 'charles', 'blanche'];
   const founders: Person[] = [];
 
   for (const p of people) {
-    if (['victoria', 'fiodor', 'aloisi'].includes(p.id)) {
+    if (founderIds.includes(p.id)) {
       founders.push(p);
       continue;
     }
@@ -226,25 +276,21 @@ export function buildPhotoPosterSvg(
     if (branchMembers[bId]) {
       branchMembers[bId].push(p);
     } else {
-      // Default to flore or lydia if ambiguous
-      branchMembers.flore.push(p);
+      branchMembers[branchKeys[0]].push(p);
     }
   }
 
-  // Sort founders: Victoria in center, Fiodor left, Aloïsi right
-  const sortedFounders = ['fiodor', 'victoria', 'aloisi']
+  const sortedFounders = founderIds
     .map((id) => byId.get(id))
     .filter(Boolean) as Person[];
 
-  // 2. Sort members inside each branch: head of branch first, then by birth year
+  // 2. Sort members inside each branch: head of branch first, then chronologically
   for (const bKey of Object.keys(branchMembers)) {
     const cfg = BRANCH_CONFIG[bKey];
     branchMembers[bKey].sort((a, b) => {
       if (a.id === cfg?.founderId) return -1;
       if (b.id === cfg?.founderId) return 1;
-      const ya = parseInt((a.birth || '').replace(/\D/g, ''), 10) || 9999;
-      const yb = parseInt((b.birth || '').replace(/\D/g, ''), 10) || 9999;
-      return ya - yb;
+      return getBirthSortKey(a.birth) - getBirthSortKey(b.birth);
     });
   }
 
@@ -295,7 +341,14 @@ export function buildPhotoPosterSvg(
     cardGlobalCounter++;
     const fx = foundersStartX + idx * (founderCardW + 60);
     const fy = foundersY + 45;
-    const isVictoria = p.id === 'victoria';
+    const role =
+      p.id === 'guillaume'
+        ? 'Grand-Père'
+        : p.id === 'georgette'
+        ? 'Grand-Mère'
+        : p.id === 'charles'
+        ? 'Père'
+        : 'Mère';
     foundersCardsSvg += renderPersonCardSvg(
       p,
       fx,
@@ -307,7 +360,7 @@ export function buildPhotoPosterSvg(
       '#F7F3EC',
       {
         isFounder: true,
-        role: isVictoria ? 'Matriarche' : 'Époux',
+        role,
       }
     );
   });
@@ -317,7 +370,7 @@ export function buildPhotoPosterSvg(
     <g transform="translate(0 0)">
       <rect x="80" y="${foundersY}" width="${width - 160}" height="${foundersHeight}" rx="14" fill="#FAF6F0" stroke="#DFD5C6" stroke-width="1.2"/>
       <text x="${width / 2}" y="${foundersY + 30}" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="3" fill="#8C7355">
-        GÉNÉRATION I — LES FONDATEURS DE LA MAISON
+        GÉNÉRATIONS I &amp; II — GRANDS-PARENTS &amp; PARENTS
       </text>
       ${foundersCardsSvg}
     </g>
@@ -327,28 +380,32 @@ export function buildPhotoPosterSvg(
 
   if (isLandscape) {
     // ==========================================
-    // LANDSCAPE LAYOUT (5 COLUMNS SIDE-BY-SIDE)
+    // LANDSCAPE LAYOUT (5 COLUMNS x 2 ROWS)
     // ==========================================
     const branchesStartY = 680;
     const availableW = width - 160; // 4800 px
+    const availableH = height - branchesStartY - 80;
+    const cols = 5;
+    const rows = 2;
     const branchColGap = 35;
-    const branchColW = (availableW - 4 * branchColGap) / 5; // ~932 px each
-    const branchKeys = ['lydia', 'flore', 'peter', 'therese', 'regine'];
+    const branchRowGap = 30;
+    const branchColW = (availableW - (cols - 1) * branchColGap) / cols;
+    const branchRowH = (availableH - (rows - 1) * branchRowGap) / rows;
 
-    branchKeys.forEach((bKey, colIdx) => {
+    branchKeys.forEach((bKey, idx) => {
       const cfg = BRANCH_CONFIG[bKey];
       const members = branchMembers[bKey] || [];
+      const colIdx = idx % cols;
+      const rowIdx = Math.floor(idx / cols);
       const colX = 80 + colIdx * (branchColW + branchColGap);
-      const colY = branchesStartY;
-      const colHeight = height - branchesStartY - 80;
+      const colY = branchesStartY + rowIdx * (branchRowH + branchRowGap);
+      const colHeight = branchRowH;
 
-      // Card dimensions inside branch column
-      // 3 cards across inside each column
       const cardMargin = 16;
       const cardGap = 16;
       const innerW = branchColW - 2 * cardMargin;
       const cardsPerRow = 3;
-      const cardW = Math.floor((innerW - (cardsPerRow - 1) * cardGap) / cardsPerRow); // ~280 px
+      const cardW = Math.floor((innerW - (cardsPerRow - 1) * cardGap) / cardsPerRow);
       const cardH = 200;
 
       let branchCardsSvg = '';
@@ -377,59 +434,52 @@ export function buildPhotoPosterSvg(
       branchesSvg += `
         <!-- Branch Column: ${cfg.name} -->
         <g>
-          <!-- Background Column Panel -->
           <rect x="${colX}" y="${colY}" width="${branchColW}" height="${colHeight}" rx="14" fill="#FCFAF7" stroke="#E6DFD3" stroke-width="1.2"/>
-          
-          <!-- Branch Header Ribbon -->
           <rect x="${colX}" y="${colY}" width="${branchColW}" height="76" rx="14" fill="${cfg.color}"/>
           <rect x="${colX}" y="${colY + 64}" width="${branchColW}" height="12" fill="${cfg.color}"/>
-          
           <text x="${colX + branchColW / 2}" y="${colY + 34}" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="700" fill="#FFFFFF" letter-spacing="1">
             ${xml(cfg.name.toUpperCase())}
           </text>
           <text x="${colX + branchColW / 2}" y="${colY + 56}" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="400" fill="#E8EDF5" letter-spacing="0.8">
             ${members.length} membres · ${xml(cfg.subtitle)}
           </text>
-
           ${branchCardsSvg}
         </g>
       `;
     });
   } else {
     // ==========================================
-    // PORTRAIT LAYOUT (STACKED HARMONIOUS PANELS)
+    // PORTRAIT LAYOUT (2 COLUMNS x 5 ROWS)
     // ==========================================
     const branchesStartY = 680;
-    const availableW = width - 160; // 3188 px
-    const cardGap = 18;
+    const availableW = width - 160;
+    const availableH = height - branchesStartY - 80;
+    const cols = 2;
+    const rows = 5;
+    const colGap = 32;
+    const rowGap = 24;
+    const panelW = (availableW - colGap) / cols;
+    const panelH = (availableH - (rows - 1) * rowGap) / rows;
+    const cardGap = 16;
     const cardW = 210;
     const cardH = 200;
 
-    // We render each branch as a dedicated horizontal section
-    const branchConfigs = [
-      { key: 'lydia', rowSpan: 2 },
-      { key: 'flore', rowSpan: 2 },
-      { key: 'therese', rowSpan: 2 },
-      { key: 'peter', rowSpan: 1 },
-      { key: 'regine', rowSpan: 1 },
-    ];
-
-    let currentY = branchesStartY;
-
-    branchConfigs.forEach(({ key: bKey }) => {
+    branchKeys.forEach((bKey, idx) => {
       const cfg = BRANCH_CONFIG[bKey];
       const members = branchMembers[bKey] || [];
-      const cardsPerRow = Math.floor((availableW - 32) / (cardW + cardGap)); // ~13 cards
-      const rowsCount = Math.max(1, Math.ceil(members.length / cardsPerRow));
-      const sectionHeight = 65 + rowsCount * (cardH + cardGap) + 16;
+      const colIdx = idx % cols;
+      const rowIdx = Math.floor(idx / cols);
+      const panelX = 80 + colIdx * (panelW + colGap);
+      const panelY = branchesStartY + rowIdx * (panelH + rowGap);
+      const cardsPerRow = Math.max(1, Math.floor((panelW - 32) / (cardW + cardGap)));
 
       let branchCardsSvg = '';
       members.forEach((m, mIdx) => {
         cardGlobalCounter++;
         const row = Math.floor(mIdx / cardsPerRow);
         const col = mIdx % cardsPerRow;
-        const cx = 80 + 16 + col * (cardW + cardGap);
-        const cy = currentY + 60 + row * (cardH + cardGap);
+        const cx = panelX + 16 + col * (cardW + cardGap);
+        const cy = panelY + 60 + row * (cardH + cardGap);
 
         branchCardsSvg += renderPersonCardSvg(
           m,
@@ -449,22 +499,18 @@ export function buildPhotoPosterSvg(
       branchesSvg += `
         <!-- Branch Section: ${cfg.name} -->
         <g>
-          <rect x="80" y="${currentY}" width="${availableW}" height="${sectionHeight}" rx="12" fill="#FCFAF7" stroke="#E6DFD3" stroke-width="1.2"/>
-          <rect x="80" y="${currentY}" width="${availableW}" height="44" rx="12" fill="${cfg.color}"/>
-          <rect x="80" y="${currentY + 34}" width="${availableW}" height="10" fill="${cfg.color}"/>
-
-          <text x="110" y="${currentY + 28}" font-family="Georgia,serif" font-size="18" font-weight="700" fill="#FFFFFF">
+          <rect x="${panelX}" y="${panelY}" width="${panelW}" height="${panelH}" rx="12" fill="#FCFAF7" stroke="#E6DFD3" stroke-width="1.2"/>
+          <rect x="${panelX}" y="${panelY}" width="${panelW}" height="44" rx="12" fill="${cfg.color}"/>
+          <rect x="${panelX}" y="${panelY + 34}" width="${panelW}" height="10" fill="${cfg.color}"/>
+          <text x="${panelX + 24}" y="${panelY + 28}" font-family="Georgia,serif" font-size="18" font-weight="700" fill="#FFFFFF">
             ${xml(cfg.name.toUpperCase())}
           </text>
-          <text x="350" y="${currentY + 27}" font-family="Arial,sans-serif" font-size="12" fill="#E8EDF5">
+          <text x="${panelX + panelW - 24}" y="${panelY + 27}" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#E8EDF5">
             ${members.length} membres · ${xml(cfg.subtitle)}
           </text>
-
           ${branchCardsSvg}
         </g>
       `;
-
-      currentY += sectionHeight + 25;
     });
   }
 
@@ -557,7 +603,7 @@ export function printPhotoPoster(
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>${xml(options.title || settings.familyName || 'Arbre Généalogique A3 - Famille Wici')}</title>
+  <title>${xml(options.title || settings.familyName || 'Arbre Généalogique A3 - Famille Tronchet')}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">

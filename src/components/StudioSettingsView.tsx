@@ -154,7 +154,7 @@ export const StudioSettingsView: React.FC<StudioSettingsViewProps> = ({
   // JSON Export
   const handleExportJson = () => {
     const payload = {
-      format: 'arbre-des-wici',
+      format: 'arbre-famille-tronchet',
       version: 2,
       exportedAt: new Date().toISOString(),
       settings,
@@ -166,7 +166,7 @@ export const StudioSettingsView: React.FC<StudioSettingsViewProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `archives-famille-wici-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `archives-famille-tronchet-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     onNotify('Sauvegarde JSON exportée avec succès.');
@@ -290,16 +290,16 @@ export const StudioSettingsView: React.FC<StudioSettingsViewProps> = ({
                     Informations à préciser d’après le document source ({incompletePeople.length})
                   </span>
                   <p className="text-xs text-[#6E665C] mt-1">
-                    Ces fiches comportaient un « ? » ou une date manquante dans votre PDF initial. Cliquez sur une fiche pour la compléter.
+                    Ces fiches ont un prénom, un nom ou une date à compléter. Cliquez sur une fiche pour la renseigner.
                   </p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => onAddChildFor('nicolas')}
+                  onClick={() => onAddChildFor('denise')}
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium border border-[#D8CFC2] bg-[#FAF8F5] hover:bg-[#EFECE4] text-[#1C1917] transition-colors whitespace-nowrap self-start md:self-auto"
                 >
                   <Plus className="h-3.5 w-3.5 text-[#8C7355]" />
-                  Ajouter un enfant à Nicolas Wicikowski
+                  Ajouter un enfant à Denise
                 </button>
               </div>
 
@@ -1008,7 +1008,7 @@ export const StudioSettingsView: React.FC<StudioSettingsViewProps> = ({
                   {
                     key: 'showSpouses' as const,
                     label: 'Médaillons des Co-parents & Unions',
-                    desc: 'Affiche Fiodor Belawski, Aloïsi Wicikowski et les conjoints sur les branches',
+                    desc: 'Affiche Georgette Martin, Blanche Meunier et les conjoints sur les branches',
                   },
                   {
                     key: 'showDates' as const,
@@ -1127,7 +1127,7 @@ export const StudioSettingsView: React.FC<StudioSettingsViewProps> = ({
                 Restaurer l’Arbre Initial
               </h3>
               <p className="text-xs text-[#6E665C] leading-relaxed">
-                Revenez à tout instant aux données initiales extraites du document original de la famille Wici (42 membres répartis sur 5 générations).
+                Revenez à tout instant aux données initiales de la famille Tronchet (34 membres répartis sur 4 générations).
               </p>
             </div>
 

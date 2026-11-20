@@ -233,7 +233,7 @@ export const PersonDrawer: React.FC<PersonDrawerProps> = ({
       return;
     }
     const targetId = isNew
-      ? `wici-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 5)}`
+      ? `tronchet-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 5)}`
       : existingPerson!.id;
 
     const updated: Person = {
@@ -715,7 +715,7 @@ export const PersonDrawer: React.FC<PersonDrawerProps> = ({
                     required
                     value={first}
                     onChange={(e) => setFirst(e.target.value)}
-                    placeholder="Ex: Victoria"
+                    placeholder="Ex: Denise"
                     className="w-full h-10 px-3 bg-[#FAF8F5] border border-[#D8CFC2] text-sm text-[#1C1917] focus:outline-none focus:border-[#8C7355]"
                   />
                 </div>
@@ -727,7 +727,7 @@ export const PersonDrawer: React.FC<PersonDrawerProps> = ({
                     type="text"
                     value={last}
                     onChange={(e) => setLast(e.target.value)}
-                    placeholder="Ex: Wicikowski"
+                    placeholder="Ex: TRONCHET"
                     className="w-full h-10 px-3 bg-[#FAF8F5] border border-[#D8CFC2] text-sm text-[#1C1917] focus:outline-none focus:border-[#8C7355]"
                   />
                 </div>
@@ -994,7 +994,7 @@ export const PersonDrawer: React.FC<PersonDrawerProps> = ({
           ) : (
             <div className="flex items-center justify-between w-full">
               <span className="text-xs text-[#8C7A65]">
-                Fiche d’archive Wici · Cliquez sur un proche pour naviguer
+                Fiche d’archive familiale · Cliquez sur un proche pour naviguer
               </span>
               <button
                 type="button"

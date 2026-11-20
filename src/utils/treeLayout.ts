@@ -1,4 +1,10 @@
-import { Person, TreeSettings } from '../data/wiciFamily';
+import {
+  Person,
+  TreeSettings,
+  ROOT_FOUNDER_ID,
+  MAIN_BRANCH_IDS,
+  getBirthSortKey,
+} from '../data/wiciFamily';
 
 export interface PositionedNode {
   id: string;
@@ -60,11 +66,16 @@ export interface TreeLayoutResult {
 
 export const BRANCH_COLORS: Record<string, { border: string; badge: string; line: string; light: string }> = {
   root: { border: '#9A7B56', badge: '#8C7355', line: '#B59E82', light: '#F7F3EB' },
-  lydia: { border: '#8C6239', badge: '#8C6239', line: '#C4A482', light: '#FAF4EE' },
-  flore: { border: '#3B624C', badge: '#3B624C', line: '#8EB09B', light: '#F1F7F3' },
-  peter: { border: '#2E5275', badge: '#2E5275', line: '#8BA6C1', light: '#F1F5F9' },
-  therese: { border: '#8E4A42', badge: '#8E4A42', line: '#C8958E', light: '#FAF2F0' },
-  regine: { border: '#6B4E71', badge: '#6B4E71', line: '#B39CB8', light: '#F7F3F8' },
+  serge: { border: '#8C6239', badge: '#8C6239', line: '#C4A482', light: '#FAF4EE' },
+  genevieve: { border: '#3B624C', badge: '#3B624C', line: '#8EB09B', light: '#F1F7F3' },
+  'jean-claude': { border: '#2E5275', badge: '#2E5275', line: '#8BA6C1', light: '#F1F5F9' },
+  raymond: { border: '#8E4A42', badge: '#8E4A42', line: '#C8958E', light: '#FAF2F0' },
+  pierre: { border: '#6B4E71', badge: '#6B4E71', line: '#B39CB8', light: '#F7F3F8' },
+  colette: { border: '#7C6438', badge: '#7C6438', line: '#C2AE88', light: '#F9F5ED' },
+  claude: { border: '#35606A', badge: '#35606A', line: '#88AEB6', light: '#EFF6F8' },
+  michel: { border: '#5A5E6B', badge: '#5A5E6B', line: '#A4A8B4', light: '#F4F5F7' },
+  denise: { border: '#944B5F', badge: '#944B5F', line: '#CE96A6', light: '#FBF2F5' },
+  jacqueline: { border: '#596A42', badge: '#596A42', line: '#A3B38D', light: '#F3F6EF' },
 };
 
 export function getBranchPalette(branchId: string) {
@@ -105,7 +116,7 @@ export function getAncestorsSet(people: Person[], targetId: string): Set<string>
 }
 
 export function resolveBranchId(personId: string, byId: Map<string, Person>): string {
-  const mainBranches = new Set(['lydia', 'flore', 'peter', 'therese', 'regine']);
+  const mainBranches = new Set<string>(MAIN_BRANCH_IDS);
   let currentId: string | undefined = personId;
   const visited = new Set<string>();
 
@@ -163,7 +174,7 @@ export function computeTreeLayout(
 
   // Identify who is a lineage node vs a spouse/co-parent medallion
   for (const p of activeList) {
-    if (p.id === focusBranch || p.id === 'victoria') continue;
+    if (p.id === focusBranch || p.id === ROOT_FOUNDER_ID) continue;
     const hasParentsInTree = (p.parents || []).some((pid) => activeSet.has(pid));
     if (hasParentsInTree) continue;
 
@@ -172,7 +183,7 @@ export function computeTreeLayout(
       const allKidsHaveOtherPrimary = myKids.every((k) =>
         (k.parents || []).some((otherId) => {
           if (otherId === p.id || !activeSet.has(otherId)) return false;
-          if (otherId === 'victoria' || otherId === focusBranch) return true;
+          if (otherId === ROOT_FOUNDER_ID || otherId === focusBranch) return true;
           const otherPerson = byId.get(otherId);
           return (otherPerson?.parents || []).some((gp) => activeSet.has(gp));
         })
@@ -189,20 +200,16 @@ export function computeTreeLayout(
     const validParents = (p.parents || []).filter(
       (pid) => activeSet.has(pid) && pid !== p.id && !coParentIds.has(pid)
     );
-    const chosenParent = validParents.includes('victoria') ? 'victoria' : validParents[0];
+    const chosenParent = validParents.includes(ROOT_FOUNDER_ID) ? ROOT_FOUNDER_ID : validParents[0];
     if (chosenParent && childrenMap.has(chosenParent)) {
       childrenMap.get(chosenParent)!.push(p);
       primaryParentOf.set(p.id, chosenParent);
     }
   }
 
-  // Sort children chronologically by birth year where available
+  // Sort children chronologically by birth date where available
   for (const [, kids] of childrenMap.entries()) {
-    kids.sort((a, b) => {
-      const ya = parseInt((a.birth || '').replace(/\D/g, ''), 10) || 9999;
-      const yb = parseInt((b.birth || '').replace(/\D/g, ''), 10) || 9999;
-      return ya - yb;
-    });
+    kids.sort((a, b) => getBirthSortKey(a.birth) - getBirthSortKey(b.birth));
   }
 
   // Precompute total descendants count for each person
@@ -231,8 +238,8 @@ export function computeTreeLayout(
   // and the parent has >= 2 visible children that are all leaf nodes sharing the same union.
   function shouldStackChildrenVertically(parentId: string, depth: number, visibleKids: Person[]): boolean {
     if (isHorizontal) return false;
-    if (depth < 1) return false;
-    if (parentId === 'victoria') return false;
+    if (depth < 2) return false;
+    if (parentId === ROOT_FOUNDER_ID || parentId === 'charles') return false;
     if (visibleKids.length < 2) return false;
     const allLeaves = visibleKids.every((k) => !hasVisibleChildren(k.id));
     if (!allLeaves) return false;

@@ -55,7 +55,7 @@ export const ChronicleBranchesView: React.FC<ChronicleBranchesViewProps> = ({
 
   return (
     <div className="max-w-[1600px] w-full mx-auto px-6 lg:px-10 py-8 space-y-12">
-      {/* Section 1: Les Cinq Grandes Branches issues de Victoria Tripel */}
+      {/* Section 1: Les Dix Branches issues de Charles Roger Tronchet & Blanche Gabrielle Meunier */}
       <section className="space-y-6">
         <div className="border-b border-[#E6DFD3] pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -63,10 +63,10 @@ export const ChronicleBranchesView: React.FC<ChronicleBranchesViewProps> = ({
               Monographie Familiale
             </p>
             <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#1C1917] mt-1">
-              Les Cinq Branches & Générations
+              Les Dix Branches & Générations
             </h1>
             <p className="text-sm text-[#6E665C] mt-1.5 max-w-2xl">
-              De Victoria Tripel (1914–1997), unie à Fiodor Belawski puis à Aloïsi Wicikowski (1915–1972), sont nées cinq branches qui forment aujourd’hui la grande famille Wici.
+              De Guillaume Théodore Tronchet et Georgette Martin, puis de Charles Roger Tronchet (1905–1982) et Blanche Gabrielle Meunier (1907–1973), sont nées dix branches qui forment la famille Tronchet.
             </p>
           </div>
         </div>
@@ -79,10 +79,6 @@ export const ChronicleBranchesView: React.FC<ChronicleBranchesViewProps> = ({
             const descendants = people.filter(
               (p) => descIds.has(p.id) && p.id !== founder.id
             );
-            const coParent =
-              branch.id === 'lydia' || branch.id === 'flore'
-                ? 'Fiodor Belawski'
-                : 'Aloïsi Wicikowski';
 
             return (
               <div
@@ -91,7 +87,7 @@ export const ChronicleBranchesView: React.FC<ChronicleBranchesViewProps> = ({
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-xs text-[#8C7A65]">
-                    <span className="font-mono">0{idx + 1}. BRANCHE</span>
+                    <span className="font-mono">{String(idx + 1).padStart(2, '0')}. BRANCHE</span>
                     <span className="font-mono tabular-nums">
                       {descIds.size} personne{descIds.size > 1 ? 's' : ''}
                     </span>
@@ -109,7 +105,7 @@ export const ChronicleBranchesView: React.FC<ChronicleBranchesViewProps> = ({
                       {getLifeDates(founder)}
                     </p>
                     <p className="text-[11px] text-[#6E665C] mt-2">
-                      Fille/Fils de Victoria Tripel · {coParent}
+                      Enfant de Charles Roger Tronchet &amp; Blanche Gabrielle Meunier
                     </p>
                   </div>
 

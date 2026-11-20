@@ -29,7 +29,7 @@ export interface FamilyArchiveRecord {
 
 const COLLECTION_NAME = 'personPhotos';
 const ARCHIVE_COLLECTION = 'familyArchive';
-const ARCHIVE_DOC_ID = 'main';
+const ARCHIVE_DOC_ID = 'tronchet-denise';
 
 /**
  * Validates personId matches security requirements (alphanumeric, dash, underscore, max 128)

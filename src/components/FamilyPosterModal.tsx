@@ -54,7 +54,7 @@ export const FamilyPosterModal: React.FC<FamilyPosterModalProps> = ({
     () => ({
       orientation,
       style: posterStyle,
-      title: customTitle.trim() || settings.familyName || 'L’Arbre des Wici',
+      title: customTitle.trim() || settings.familyName || 'L’Arbre de Denise',
       subtitle: customSubtitle.trim() || undefined,
     }),
     [orientation, posterStyle, customTitle, customSubtitle, settings.familyName]
@@ -252,7 +252,7 @@ export const FamilyPosterModal: React.FC<FamilyPosterModalProps> = ({
                   type="text"
                   value={customTitle}
                   onChange={(e) => setCustomTitle(e.target.value)}
-                  placeholder={settings.familyName || 'L’Arbre des Wici'}
+                  placeholder={settings.familyName || 'L’Arbre de Denise'}
                   className="w-full h-10 px-3 bg-[#FAF8F5] border border-[#E0D7C9] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#8C7355] focus:bg-white"
                 />
               </div>

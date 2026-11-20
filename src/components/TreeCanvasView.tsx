@@ -22,6 +22,8 @@ import {
   TreeSettings,
   BRANCH_DEFINITIONS,
   GENERATION_LABELS,
+  ROOT_FOUNDER_ID,
+  MAIN_BRANCH_IDS,
   getFullName,
   getInitials,
   isPersonIncomplete
@@ -116,7 +118,7 @@ export const TreeCanvasView: React.FC<TreeCanvasViewProps> = ({
           : fullFitZoom;
 
       const rootNode =
-        layout.nodes.find((n) => n.id === (focusBranch === 'all' ? 'victoria' : focusBranch)) ||
+        layout.nodes.find((n) => n.id === (focusBranch === 'all' ? ROOT_FOUNDER_ID : focusBranch)) ||
         layout.nodes[0];
 
       if (mode === 'smart' && rootNode && layout.width * targetZoom > vw) {
@@ -428,7 +430,7 @@ export const TreeCanvasView: React.FC<TreeCanvasViewProps> = ({
     for (const p of people) {
       // Collapse grandchildren so only Gen I, II, III are shown
       const hasKids = people.some((c) => (c.parents || []).includes(p.id));
-      if (hasKids && p.id !== 'victoria' && !['lydia', 'flore', 'peter', 'therese', 'regine'].includes(p.id)) {
+      if (hasKids && p.id !== ROOT_FOUNDER_ID && p.id !== 'charles' && !(MAIN_BRANCH_IDS as readonly string[]).includes(p.id)) {
         toCollapse.add(p.id);
       }
     }
@@ -479,7 +481,7 @@ export const TreeCanvasView: React.FC<TreeCanvasViewProps> = ({
     const { person, width, height, childCount, descendantCount, isCollapsed, branchId } = node;
     const isDimmed = highlightedIds ? !highlightedIds.has(person.id) : false;
     const isHighlighted = highlightedIds ? highlightedIds.has(person.id) : false;
-    const isFounder = person.id === 'victoria';
+    const isFounder = person.id === ROOT_FOUNDER_ID;
     const incomplete = isPersonIncomplete(person);
     const branchPalette = getBranchPalette(branchId);
     const datesText =

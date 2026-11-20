@@ -40,8 +40,8 @@ import {
   PersonPhotoRecord
 } from './firebase/photoService';
 
-const STORAGE_PEOPLE_KEY = 'wici-archive-people-v2';
-const STORAGE_SETTINGS_KEY = 'wici-archive-settings-v2';
+const STORAGE_PEOPLE_KEY = 'denise-archive-people-v1';
+const STORAGE_SETTINGS_KEY = 'denise-archive-settings-v1';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'tree' | 'branches' | 'settings'>('tree');
@@ -57,16 +57,6 @@ export default function App() {
         const parsed = JSON.parse(savedV2);
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map((p: Person) => ({
-            ...p,
-            photo: p.photo || seedPhotos.get(p.id),
-          }));
-        }
-      }
-      const legacy = localStorage.getItem('wici-tree-v1');
-      if (legacy) {
-        const parsedLegacy = JSON.parse(legacy);
-        if (Array.isArray(parsedLegacy) && parsedLegacy.length > 0) {
-          return parsedLegacy.map((p: Person) => ({
             ...p,
             photo: p.photo || seedPhotos.get(p.id),
           }));
@@ -463,7 +453,7 @@ export default function App() {
     setSettings(DEFAULT_SETTINGS);
     setFocusBranch('all');
     syncTreeToCloud(withPhotos, DEFAULT_SETTINGS);
-    notify('Arbre initial de la famille Wici restauré et synchronisé.');
+    notify('Arbre initial de la famille Tronchet restauré et synchronisé.');
   };
 
   const handleSavePersonPhoto = async (personId: string, result: CropResult) => {
