@@ -1,0 +1,8 @@
+{
+  "name": "L’Arbre Généalogique Denise",
+  "description": "Arbre généalogique de la famille Kurzawinski \u0026 Tronchet",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
